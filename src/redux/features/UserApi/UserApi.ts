@@ -77,6 +77,26 @@ const UserApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["parcels"],
         }),
+        getMyParcelsOfUser: builder.query({
+            query: ({ queryData }) => {
+                const queryParams = createQueryParams(queryData);
+                return {
+                    url: `parcels${queryParams}`,
+                    method: "GET",
+                };
+            },
+            providesTags: ["parcels"],
+        }),
+        getMyParcelMain: builder.query({
+            query: ({ queryData }) => {
+                const queryParams = createQueryParams(queryData);
+                return {
+                    url: `parcels/my-parcels${queryParams}`,
+                    method: "GET",
+                };
+            },
+            providesTags: ["parcels"],
+        }),
     }),
 });
 
@@ -88,4 +108,6 @@ export const {
     // useDeleteExampleMutation,
     useGetMyParcelsQuery,
     useCreateParcelMutation,
+    useGetMyParcelsOfUserQuery,
+    useGetMyParcelMainQuery,
 } = UserApi;
