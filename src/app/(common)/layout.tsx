@@ -1,5 +1,6 @@
 
 import { ReactNode } from "react";
+import 'antd/dist/reset.css';
 
 const layout = ({ children }: { children: ReactNode }) => {
   return (
