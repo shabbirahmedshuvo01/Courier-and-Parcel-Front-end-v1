@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import Link from "next/link";
-import { useLoginMutation } from '@/redux/features/auth/authApi';
+import { useGetMeQuery, useLoginMutation } from '@/redux/features/auth/authApi';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/redux/features/auth/authSlice';
 
@@ -22,6 +22,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
 
     const [loginAccount, { isLoading }] = useLoginMutation();
+    const { data: userData } = useGetMeQuery({});
+
+    console.log('userData:', userData);
     const dispatch = useDispatch();
 
     // 3. React Hook Form setup
@@ -121,7 +124,7 @@ export default function LoginPage() {
                         <div className="text-center">
                             <span className="text-sm text-gray-600">
                                 Create an account?{" "}
-                                <Link href="/signup" className="text-green-600 hover:text-green-700 hover:underline font-medium">
+                                <Link href="/auth/register" className="text-green-600 hover:text-green-700 hover:underline font-medium">
                                     Sign Up
                                 </Link>
                             </span>
