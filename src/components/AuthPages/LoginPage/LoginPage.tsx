@@ -7,8 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import Link from "next/link";
 import { useGetMeQuery, useLoginMutation } from '@/redux/features/auth/authApi';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '@/redux/features/auth/authSlice';
+import { useRouter } from 'next/navigation';
+import { RootState } from '@/redux/store';
 
 // 1. Zod schema
 const loginSchema = z.object({
@@ -23,6 +25,8 @@ export default function LoginPage() {
 
     const [loginAccount, { isLoading }] = useLoginMutation();
     const { data: userData } = useGetMeQuery({});
+    const user = useSelector((state: RootState) => state.auth.user);
+    const router = useRouter()
 
     console.log('userData:', userData);
     const dispatch = useDispatch();
@@ -56,6 +60,10 @@ export default function LoginPage() {
                     })
                 );
                 toast.success('Login successful');
+
+                if(user){
+                    router.push("/")
+                }
                 // Optionally redirect to dashboard or home page
             } else {
                 toast.error('Login failed');

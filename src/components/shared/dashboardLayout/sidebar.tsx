@@ -21,7 +21,7 @@ import { RxDashboard } from "react-icons/rx";
 import { GiBuyCard } from "react-icons/gi";
 import { RiShieldUserFill } from "react-icons/ri";
 import Image from "next/image";
-import navLogo from "@/assets/images/images.jpg";
+import navLogo from "@/assets/images/logo.png";
 import { TbArrowsRandom } from "react-icons/tb";
 import { IoBookmark } from "react-icons/io5";
 
@@ -45,8 +45,8 @@ export default function Sidebar({ role = "user" }: { role?: string }) {
             <Link
                 href={href}
                 className={`flex items-center px-3 py-2 text-sm md:text-base rounded-md transition-colors 
-        ${isActive(href) ? "text-selected-text bg-select" : "text-gray-600"} 
-        hover:text-gray-900 hover:bg-gray-100`}
+        ${isActive(href) ? "text-white bg-green-600" : "text-gray-600"} 
+        hover:text-gray-900 hover:bg-gray-400`}
             >
                 {Icon && <Icon className="h-5 w-5 mr-3 flex-shrink-0" />}
                 {children}
@@ -122,6 +122,8 @@ export default function Sidebar({ role = "user" }: { role?: string }) {
                                 className="w-auto h-6 md:h-7"
                                 priority
                             />
+
+                            <p className="text-lg font-bold text-gray-700">Trust and Build</p>
                         </div>
                     </Link>
 
@@ -183,26 +185,26 @@ export default function Sidebar({ role = "user" }: { role?: string }) {
 
                                 {role === "user" && (
                                     <div className="space-y-1">
-                                        <NavItem href="/user-dashboard" icon={RxDashboard}>
-                                            Dashboard
+                                        <NavItem href="/" icon={RxDashboard}>
+                                            Overview
                                         </NavItem>
                                         <NavItem
-                                            href="/user-dashboard/my-events"
+                                            href="/my-parcel"
                                             icon={LuCalendarCheck2}
                                         >
-                                            My Events
+                                            My Parcel
                                         </NavItem>
-                                        <NavItem href="/user-dashboard/my-classes" icon={LuSchool}>
-                                            My Classes
+                                        <NavItem href="/my-parcels-all" icon={LuSchool}>
+                                            All Parcel
                                         </NavItem>
                                         <NavItem
-                                            href="/user-dashboard/membership"
+                                            href="/create-parcel"
                                             icon={TbArrowsRandom}
                                         >
-                                            Membership
+                                            Create Parcel
                                         </NavItem>
                                         <NavItem
-                                            href="/user-dashboard/my-profile"
+                                            href="/user-profile"
                                             icon={FaUserEdit}
                                         >
                                             My Profile
