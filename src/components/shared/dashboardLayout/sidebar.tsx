@@ -132,22 +132,16 @@ export default function Sidebar({ role = "user" }: { role?: string }) {
                             <div>
                                 {role === "admin" && (
                                     <div className="space-y-1">
-                                        <NavItem href="/dashboard" icon={Home}>
+                                        <NavItem href="/admin-dashboard" icon={Home}>
                                             Quick View
                                         </NavItem>
-                                        {/* <NavItem
-                      href="/dashboard/business-request"
-                      icon={MdOutlineHandshake}
-                    >
-                      Business Request
-                    </NavItem> */}
                                         <NavItem
-                                            href="/dashboard/event-request"
-                                            icon={LuCalendarCheck2}
+                                            href="/admin-dashboard/user-management"
+                                            icon={RxDashboard}
                                         >
-                                            Event Request
+                                            User Management
                                         </NavItem>
-                                        <NavItem href="/dashboard/class-request" icon={LuSchool}>
+                                        <NavItem href="/admin-dashboard/class-request" icon={LuSchool}>
                                             Class Request
                                         </NavItem>
                                         <NavItem
