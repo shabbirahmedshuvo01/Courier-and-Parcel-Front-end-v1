@@ -4,7 +4,7 @@
 import LoadingPage from "@/app/loading"
 import { useGetAllParcelsQuery, useGetAllUsersQuery } from "@/redux/features/AdminApi/AdminApi"
 import { useDeleteParcelMutation } from "@/redux/features/AdminApi/AdminApi"
-import { use, useState } from "react"
+import { useState } from "react"
 import Swal from "sweetalert2"
 
 interface Parcel {
