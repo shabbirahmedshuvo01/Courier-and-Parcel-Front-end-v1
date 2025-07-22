@@ -47,6 +47,14 @@ const AdminApi = baseApi.injectEndpoints({
             },
             providesTags: ["admin"],
         }),
+        addAgent: builder.mutation({
+            query: (agentData) => ({
+                url: `/auth/register`,
+                method: "POST",
+                body: agentData,
+            }),
+            invalidatesTags: ["admin"],
+        }),
     }),
 });
 
@@ -56,4 +64,5 @@ export const {
     useUpdateParcelStatusMutation,
     useDeleteParcelMutation,
     useGetAllUsersQuery,
+    useAddAgentMutation,
 } = AdminApi;

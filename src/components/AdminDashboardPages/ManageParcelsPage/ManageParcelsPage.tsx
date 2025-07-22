@@ -2,9 +2,9 @@
 "use client"
 
 import LoadingPage from "@/app/loading"
-import { useGetAllParcelsQuery } from "@/redux/features/AdminApi/AdminApi"
+import { useGetAllParcelsQuery, useGetAllUsersQuery } from "@/redux/features/AdminApi/AdminApi"
 import { useDeleteParcelMutation } from "@/redux/features/AdminApi/AdminApi"
-import { useState } from "react"
+import { use, useState } from "react"
 import Swal from "sweetalert2"
 
 interface Parcel {
@@ -77,6 +77,10 @@ export default function ManageParcelsPage() {
             sort: `${sortOrder === "desc" ? "-" : ""}${sortBy}`,
         },
     })
+
+    const { data: usersData } = useGetAllUsersQuery({ queryData: { role: "agent" } })
+
+    console.log(usersData);
 
     const [deleteParcel, { isLoading: isDeleting }] = useDeleteParcelMutation()
 

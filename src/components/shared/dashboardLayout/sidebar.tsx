@@ -135,20 +135,14 @@ export default function Sidebar({ role = "user" }: { role?: string }) {
                                         <NavItem href="/admin-dashboard" icon={Home}>
                                             Quick View
                                         </NavItem>
+                                        <NavItem href="/admin-dashboard/manage-parcels" icon={LuSchool}>
+                                            Manage Parcel
+                                        </NavItem>
                                         <NavItem
                                             href="/admin-dashboard/user-management"
-                                            icon={RxDashboard}
-                                        >
-                                            User Management
-                                        </NavItem>
-                                        <NavItem href="/admin-dashboard/class-request" icon={LuSchool}>
-                                            Class Request
-                                        </NavItem>
-                                        <NavItem
-                                            href="/dashboard/org-requests"
                                             icon={RiShieldUserFill}
                                         >
-                                            Organizers
+                                            User Management
                                         </NavItem>
                                         <NavItem href="/dashboard/booked-users" icon={IoBookmark}>
                                             Booked Users
