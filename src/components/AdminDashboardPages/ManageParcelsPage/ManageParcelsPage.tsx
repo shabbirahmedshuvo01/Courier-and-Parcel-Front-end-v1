@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
+import LoadingPage from "@/app/loading"
 import { useGetAllParcelsQuery } from "@/redux/features/AdminApi/AdminApi"
+import { useDeleteParcelMutation } from "@/redux/features/AdminApi/AdminApi"
 import { useState } from "react"
+import Swal from "sweetalert2"
 
 interface Parcel {
     _id: string
@@ -75,6 +78,8 @@ export default function ManageParcelsPage() {
         },
     })
 
+    const [deleteParcel, { isLoading: isDeleting }] = useDeleteParcelMutation()
+
     const parcels = data?.data || []
     const totalParcels = data?.count || 0
     const totalPages = Math.max(1, Math.ceil(totalParcels / limit))
@@ -142,9 +147,9 @@ export default function ManageParcelsPage() {
         window.URL.revokeObjectURL(url)
     }
 
-    const handleSelectParcel = (parcelId: string) => {
-        setSelectedParcels((prev) => (prev.includes(parcelId) ? prev.filter((id) => id !== parcelId) : [...prev, parcelId]))
-    }
+    // const handleSelectParcel = (parcelId: string) => {
+    //     setSelectedParcels((prev) => (prev.includes(parcelId) ? prev.filter((id) => id !== parcelId) : [...prev, parcelId]))
+    // }
 
     const handleSelectAll = () => {
         if (selectedParcels.length === parcels.length) {
@@ -155,20 +160,7 @@ export default function ManageParcelsPage() {
     }
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-red-100 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="relative">
-                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-orange-200 border-t-orange-600 mx-auto mb-4"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-2xl">📋</span>
-                        </div>
-                    </div>
-                    <p className="text-slate-600 text-lg font-medium">Loading parcels...</p>
-                    <p className="text-slate-500 text-sm mt-1">Please wait while we fetch parcel data</p>
-                </div>
-            </div>
-        )
+        return <LoadingPage />
     }
 
     if (error) {
@@ -468,14 +460,54 @@ export default function ManageParcelsPage() {
                 {parcels.length > 0 ? (
                     viewMode === "cards" ? (
                         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {parcels.map((parcel: Parcel) => (
-                                // ...card view code unchanged, use parcel...
+                            {parcels?.map((parcel: Parcel) => (
                                 <div
                                     key={parcel._id}
                                     className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-[1.02]"
                                 >
-                                    {/* Card Header */}
-                                    {/* ...same as before... */}
+                                    <div className="p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <span className="font-semibold text-orange-600">{parcel.trackingNumber}</span>
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${parcel.status === "delivered"
+                                                ? "bg-emerald-100 text-emerald-700"
+                                                : parcel.status === "pending"
+                                                    ? "bg-amber-100 text-amber-700"
+                                                    : parcel.status === "in-transit"
+                                                        ? "bg-purple-100 text-purple-700"
+                                                        : "bg-slate-100 text-slate-700"
+                                                }`}>
+                                                {parcel.status}
+                                            </span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-slate-500 text-xs">Sender:</span>
+                                            <div className="font-medium">{parcel.sender.name} ({parcel.sender.email})</div>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-slate-500 text-xs">Recipient:</span>
+                                            <div className="font-medium">{parcel.recipient.name} ({parcel.recipient.email})</div>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-slate-500 text-xs">Category:</span>
+                                            <span className="ml-1">{parcel.parcelDetails.category}</span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-slate-500 text-xs">Weight:</span>
+                                            <span className="ml-1">{parcel.parcelDetails.weight} kg</span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-slate-500 text-xs">Shipping:</span>
+                                            <span className="ml-1">{parcel.shipping.service} ({formatCurrency(parcel.shipping.cost)})</span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-slate-500 text-xs">Created:</span>
+                                            <span className="ml-1">{formatDate(parcel.createdAt)}</span>
+                                        </div>
+                                        <div className="mb-2">
+                                            <span className="text-slate-500 text-xs">Estimated Delivery:</span>
+                                            <span className="ml-1">{formatDate(parcel.shipping.estimatedDelivery)}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -485,17 +517,96 @@ export default function ManageParcelsPage() {
                             <div className="overflow-x-auto">
                                 <table className="min-w-full">
                                     <thead>
-                                        {/* ...table header unchanged... */}
+                                        <tr>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">#</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Tracking Number</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Sender</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Recipient</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Category</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Weight</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Shipping</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Status</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Payment</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Created</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Est. Delivery</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Actions</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         {parcels.map((parcel: Parcel, index: number) => (
-                                            // ...table row code unchanged, use parcel...
                                             <tr
                                                 key={parcel._id}
                                                 className={`border-b border-slate-100 hover:bg-slate-50/50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-slate-50/30"
                                                     }`}
                                             >
-                                                {/* ...table cells unchanged... */}
+                                                <td className="px-4 py-3 text-sm text-slate-700">{index + 1}</td>
+                                                <td className="px-4 py-3 text-sm font-semibold text-orange-600">{parcel.trackingNumber}</td>
+                                                <td className="px-4 py-3 text-sm text-slate-700">
+                                                    {parcel.sender.name}<br />
+                                                    <span className="text-xs text-slate-400">{parcel.sender.email}</span>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-slate-700">
+                                                    {parcel.recipient.name}<br />
+                                                    <span className="text-xs text-slate-400">{parcel.recipient.email}</span>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-slate-700">{parcel.parcelDetails.category}</td>
+                                                <td className="px-4 py-3 text-sm text-slate-700">{parcel.parcelDetails.weight} kg</td>
+                                                <td className="px-4 py-3 text-sm text-slate-700">
+                                                    {parcel.shipping.service}<br />
+                                                    <span className="text-xs text-slate-400">{formatCurrency(parcel.shipping.cost)}</span>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm">
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${parcel.status === "delivered"
+                                                        ? "bg-emerald-100 text-emerald-700"
+                                                        : parcel.status === "pending"
+                                                            ? "bg-amber-100 text-amber-700"
+                                                            : parcel.status === "in-transit"
+                                                                ? "bg-purple-100 text-purple-700"
+                                                                : parcel.status === "processing"
+                                                                    ? "bg-blue-100 text-blue-700"
+                                                                    : parcel.status === "cancelled"
+                                                                        ? "bg-red-100 text-red-700"
+                                                                        : "bg-slate-100 text-slate-700"
+                                                        }`}>
+                                                        {parcel.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm">
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${parcel.paymentStatus === "paid"
+                                                        ? "bg-emerald-100 text-emerald-700"
+                                                        : parcel.paymentStatus === "pending"
+                                                            ? "bg-amber-100 text-amber-700"
+                                                            : parcel.paymentStatus === "failed"
+                                                                ? "bg-red-100 text-red-700"
+                                                                : parcel.paymentStatus === "refunded"
+                                                                    ? "bg-blue-100 text-blue-700"
+                                                                    : "bg-slate-100 text-slate-700"
+                                                        }`}>
+                                                        {parcel.paymentStatus}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-slate-700">{formatDate(parcel.createdAt)}</td>
+                                                <td className="px-4 py-3 text-sm text-slate-700">{formatDate(parcel.shipping.estimatedDelivery)}</td>
+                                                <td className="px-4 py-3 text-sm">
+                                                    <button
+                                                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                                                        onClick={async () => {
+                                                            if (window.confirm("Are you sure you want to delete this parcel?")) {
+                                                                await deleteParcel(parcel._id)
+                                                                Swal.fire({
+                                                                    icon: "success",
+                                                                    title: "Parcel deleted!",
+                                                                    text: "The parcel has been successfully deleted.",
+                                                                    timer: 1800,
+                                                                    showConfirmButton: false,
+                                                                })
+                                                            }
+                                                        }}
+                                                        disabled={isDeleting}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
