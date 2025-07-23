@@ -2,7 +2,7 @@
 "use client"
 
 import LoadingPage from "@/app/loading"
-import { useGetAllParcelsQuery, useGetAllUsersQuery } from "@/redux/features/AdminApi/AdminApi"
+import { useAssignAgentToParcelMutation, useGetAllParcelsQuery, useGetAllUsersQuery } from "@/redux/features/AdminApi/AdminApi"
 import { useDeleteParcelMutation } from "@/redux/features/AdminApi/AdminApi"
 import { useState } from "react"
 import Swal from "sweetalert2"
@@ -49,6 +49,19 @@ interface Parcel {
     createdAt: string
     updatedAt: string
     __v: number
+    agent?: {
+        _id: string
+        name: string
+        email: string
+        phone?: string
+        address?: {
+            street?: string
+            city?: string
+            state?: string
+            zipCode?: string
+            country?: string
+        }
+    }
 }
 
 export default function ManageParcelsPage() {
@@ -81,6 +94,10 @@ export default function ManageParcelsPage() {
     const { data: usersData } = useGetAllUsersQuery({ queryData: { role: "agent" } })
 
     console.log(usersData);
+
+    const agents = usersData?.data || [];
+
+    const [assignAgentToParcel, { isLoading: isAssigning }] = useAssignAgentToParcelMutation()
 
     const [deleteParcel, { isLoading: isDeleting }] = useDeleteParcelMutation()
 
@@ -533,6 +550,7 @@ export default function ManageParcelsPage() {
                                             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Payment</th>
                                             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Created</th>
                                             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Est. Delivery</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Assign Agent</th>
                                             <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Actions</th>
                                         </tr>
                                     </thead>
@@ -610,6 +628,32 @@ export default function ManageParcelsPage() {
                                                     >
                                                         Delete
                                                     </button>
+                                                </td>
+                                                <td className="px-4 py-3 text-sm">
+                                                    <select
+                                                        className="border border-slate-300 rounded px-2 py-1"
+                                                        defaultValue={parcel.agent?._id || ""}
+                                                        onChange={async (e) => {
+                                                            const agentId = e.target.value
+                                                            if (agentId) {
+                                                                await assignAgentToParcel({ parcelId: parcel._id, agentId })
+                                                                Swal.fire({
+                                                                    icon: "success",
+                                                                    title: "Agent Assigned!",
+                                                                    timer: 1200,
+                                                                    showConfirmButton: false,
+                                                                })
+                                                            }
+                                                        }}
+                                                        disabled={isAssigning}
+                                                    >
+                                                        <option value="">Select Agent</option>
+                                                        {agents.map((agent: any) => (
+                                                            <option key={agent._id} value={agent._id}>
+                                                                {agent.name} ({agent.email})
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </td>
                                             </tr>
                                         ))}

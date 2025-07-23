@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { LogOut, MailCheck, Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 
 import { Home } from "lucide-react";
 import Link from "next/link";
@@ -15,10 +15,10 @@ import { useDispatch } from "react-redux";
 import { LuCalendarCheck2 } from "react-icons/lu";
 import { LuSchool } from "react-icons/lu";
 // import { MdAttachMoney } from "react-icons/md";
-import { CiWallet } from "react-icons/ci";
+// import { CiWallet } from "react-icons/ci";
 import { FaUserEdit } from "react-icons/fa";
 import { RxDashboard } from "react-icons/rx";
-import { GiBuyCard } from "react-icons/gi";
+// import { GiBuyCard } from "react-icons/gi";
 import { RiShieldUserFill } from "react-icons/ri";
 import Image from "next/image";
 import navLogo from "@/assets/images/logo.png";
@@ -144,28 +144,10 @@ export default function Sidebar({ role = "user" }: { role?: string }) {
                                         >
                                             User Management
                                         </NavItem>
-                                        <NavItem href="/dashboard/booked-users" icon={IoBookmark}>
-                                            Booked Users
+                                        <NavItem href="/admin-dashboard/add-agent" icon={IoBookmark}>
+                                            Create Agent
                                         </NavItem>
-                                        <NavItem
-                                            href="/dashboard/subscription"
-                                            icon={TbArrowsRandom}
-                                        >
-                                            Subscription
-                                        </NavItem>
-                                        <NavItem href="/dashboard/subscribers" icon={MailCheck}>
-                                            Subscribers
-                                        </NavItem>
-                                        <NavItem href="/dashboard/wallet" icon={CiWallet}>
-                                            Wallet
-                                        </NavItem>
-                                        <NavItem
-                                            href="/dashboard/subscription-purchase"
-                                            icon={GiBuyCard}
-                                        >
-                                            Purchase
-                                        </NavItem>
-                                        <NavItem href="/dashboard/my-profile" icon={FaUserEdit}>
+                                        <NavItem href="/admin-dashboard/manage-profile" icon={FaUserEdit}>
                                             My Profile
                                         </NavItem>
                                     </div>
