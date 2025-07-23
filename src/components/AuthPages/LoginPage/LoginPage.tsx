@@ -47,7 +47,7 @@ export default function LoginPage() {
             const res = await loginAccount(data).unwrap();
             console.log('Login response:', res);
 
-            if (res.success && res.token && res.data) {
+            if (res?.success && res?.token && res?.data) {
                 // localStorage.setItem('token', res.token);
                 // localStorage.setItem('user', JSON.stringify(res.data));
 
@@ -61,7 +61,11 @@ export default function LoginPage() {
                 );
                 toast.success('Login successful');
 
-                if(user){
+                // console.log('User data after login:', res.data?.role === "admin");
+
+                if (user && res.data?.role === "admin") {
+                    router.push("/admin-dashboard")
+                } else {
                     router.push("/")
                 }
                 // Optionally redirect to dashboard or home page
